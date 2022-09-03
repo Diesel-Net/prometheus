@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+
+  backend:
+    image: prom/prometheus:v2.36.2
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
+      - /etc/localtime:/etc/localtime
+      - {{ config_dir }}:/etc/prometheus
+      - {{ data_dir }}:/prometheus
+    command: 
+      - --config.file=/etc/prometheus/config.yaml 
+      - --web.enable-remote-write-receiver
+      - --storage.tsdb.retention.time={{ storage_retention }}
+      #- --enable-feature=new-service-discovery-manager
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.{{ repository }}.loadbalancer.server.port=9090
+        - traefik.http.routers.{{ repository }}.rule=Host(`{{ prom_host }}`)
+        # encrypted SHA htpasswd (user:password)
+        - traefik.http.middlewares.{{ repository }}-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
+        - traefik.http.routers.{{ repository }}.middlewares={{ repository }}-auth@docker
+        - traefik.http.routers.{{ repository }}.service={{ repository }}
+    networks:
+      - {{ traefik_network }}
+
+networks:
+  {{ traefik_network }}:
+    external: true
+    name: {{ traefik_network }}
