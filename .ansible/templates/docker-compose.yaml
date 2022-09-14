@@ -21,7 +21,9 @@ services:
         # encrypted SHA htpasswd (user:password)
         - traefik.http.middlewares.{{ repository }}-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
         - traefik.http.routers.{{ repository }}.middlewares={{ repository }}-auth@docker
-        - traefik.http.routers.{{ repository }}.tls.certresolver=step-ca
+        - traefik.http.routers.{{ repository }}.tls.certresolver=cloudflare
+        - traefik.http.routers.{{ repository }}.tls.domains[0].main={{ prom_domains_main }}
+        - traefik.http.routers.{{ repository }}.tls.domains[0].sans={{ prom_domains_sans }}
         - traefik.http.routers.{{ repository }}.service={{ repository }}
     networks:
       - {{ traefik_network }}

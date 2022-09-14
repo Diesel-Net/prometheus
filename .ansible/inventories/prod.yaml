@@ -9,7 +9,9 @@ all:
 
     storage_retention: 90d
 
-    prom_host: prometheus.diesel.net
+    prom_host: prometheus.kiwi-labs.net
+    prom_domains_main: kiwi-labs.net
+    prom_domains_sans: '*.kiwi-labs.net'
 
     ansible_user: automation
     ansible_python_interpreter: /usr/bin/python3
