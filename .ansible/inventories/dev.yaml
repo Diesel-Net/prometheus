@@ -1,0 +1,16 @@
+all:
+  children:
+
+    swarm_manager:
+      hosts:
+        dev.diesel.net:
+        
+  vars:
+
+    storage_retention: 90d
+
+    kiwi_labs_host: prometheus.dev.kiwi-labs.net
+    diesel_net_host: prometheus.dev.diesel.net
+    
+    ansible_user: automation
+    ansible_python_interpreter: /usr/bin/python3

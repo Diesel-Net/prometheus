@@ -1,0 +1,65 @@
+kind: pipeline
+type: docker
+name: Deploy Prometheus (dev)
+
+clone:
+  depth: 1
+
+concurrency:
+  limit: 1
+
+steps:
+  - name: deploy
+    image: docker.nexus.diesel.net/drone-ansible:2.13
+    environment:
+      PROM_HTPASSWD:
+        from_secret: prom_htpasswd
+    settings:
+      inventory: .ansible/inventories/dev.yaml
+      galaxy: .ansible/roles/requirements.yaml
+      playbook: .ansible/deploy.yaml
+      private_key:
+        from_secret: automation_id_rsa
+      vault_password:
+        from_secret: ansible_vault_password
+
+trigger:
+  branch:
+    - development
+  event:
+    - push
+
+---
+
+kind: pipeline
+type: docker
+name: Deploy Prometheus (prod)
+
+clone:
+  depth: 1
+
+concurrency:
+  limit: 1
+
+steps:
+  - name: deploy
+    image: docker.nexus.diesel.net/drone-ansible:2.13
+    environment:
+      PROM_HTPASSWD:
+        from_secret: prom_htpasswd
+    settings:
+      inventory: .ansible/inventories/prod.yaml
+      galaxy: .ansible/roles/requirements.yaml
+      playbook: .ansible/deploy.yaml
+      private_key:
+        from_secret: automation_id_rsa
+      vault_password:
+        from_secret: ansible_vault_password
+
+trigger:
+  branch:
+    - stable
+  event:
+    - push
+
+...

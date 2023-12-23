@@ -1,0 +1,4 @@
+global:
+  scrape_interval: 1m # default 
+  scrape_timeout: 10s # default
+  evaluation_interval: 1m # default

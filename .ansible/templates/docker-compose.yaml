@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+
+  backend:
+    image: prom/prometheus:v2.48.1
+    volumes:
+      - /etc/ssl/certs/ca-certificates.crt:/etc/ssl/certs/ca-certificates.crt
+      - /etc/localtime:/etc/localtime
+      - {{ config_dir }}:/etc/prometheus
+      - {{ data_dir }}:/prometheus
+    command: 
+      - --config.file=/etc/prometheus/config.yaml 
+      - --web.enable-remote-write-receiver
+      - --storage.tsdb.retention.time={{ storage_retention }}
+      #- --enable-feature=new-service-discovery-manager
+    deploy:
+      labels:
+        - traefik.enable=true
+        - traefik.http.services.prom-backend.loadbalancer.server.port=9090
+        - traefik.http.middlewares.prom-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
+
+        - traefik.http.routers.kiwi-labs.rule=Host(`{{ kiwi_labs_host }}`)
+        - traefik.http.routers.kiwi-labs.middlewares=prom-auth@docker
+        - traefik.http.routers.kiwi-labs.tls.certresolver=cloudflare
+        - traefik.http.routers.kiwi-labs.tls.domains[0].main={{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
+        - traefik.http.routers.kiwi-labs.tls.domains[0].sans=*.{{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
+        - traefik.http.routers.kiwi-labs.service=prom-backend@docker
+
+        - traefik.http.routers.diesel-net.rule=Host(`{{ diesel_net_host }}`)
+        - traefik.http.routers.diesel-net.middlewares=prom-auth@docker
+        - traefik.http.routers.diesel-net.tls.certresolver=step-ca
+        - traefik.http.routers.diesel-net.service=prom-backend@docker
+    networks:
+      - {{ traefik_network }}
+
+networks:
+  {{ traefik_network }}:
+    external: true
+    name: {{ traefik_network }}
