@@ -16,7 +16,7 @@ services:
       labels:
         - traefik.enable=true
         - traefik.http.services.{{ app_name }}-backend.loadbalancer.server.port=9090
-        - traefik.http.middlewares.{{ app_name }}-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
+        - traefik.http.middlewares.{{ app_name }}-auth.basicauth.users={{ prom_htpasswd }}
 
         - traefik.http.routers.kiwi-{{ app_name }}.rule=Host(`{{ kiwi_host }}`)
         - traefik.http.routers.kiwi-{{ app_name }}.middlewares={{ app_name }}-auth@docker
