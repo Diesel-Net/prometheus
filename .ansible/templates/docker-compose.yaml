@@ -20,14 +20,14 @@ services:
         - traefik.http.middlewares.prom-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
 
         - traefik.http.routers.kiwi-labs.rule=Host(`{{ kiwi_labs_host }}`)
-        - traefik.http.routers.kiwi-labs.middlewares=auth@docker
+        - traefik.http.routers.kiwi-labs.middlewares=prom-auth@docker
         - traefik.http.routers.kiwi-labs.tls.certresolver=cloudflare
         - traefik.http.routers.kiwi-labs.tls.domains[0].main={{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
         - traefik.http.routers.kiwi-labs.tls.domains[0].sans=*.{{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
         - traefik.http.routers.kiwi-labs.service=prom-backend@docker
 
         - traefik.http.routers.diesel-net.rule=Host(`{{ diesel_net_host }}`)
-        - traefik.http.routers.diesel-net.middlewares=auth@docker
+        - traefik.http.routers.diesel-net.middlewares=prom-auth@docker
         - traefik.http.routers.diesel-net.tls.certresolver=step-ca
         - traefik.http.routers.diesel-net.service=prom-backend@docker
     networks:
