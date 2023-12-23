@@ -7,10 +7,10 @@ all:
         
   vars:
 
-    storage_retention: 90d
+    storage_retention: 1y
 
-    kiwi_labs_host: prometheus.kiwi-labs.net
-    diesel_net_host: prometheus.diesel.net
+    kiwi_host: prometheus.kiwi-labs.net
+    diesel_host: prometheus.diesel.net
 
     ansible_user: automation
     ansible_python_interpreter: /usr/bin/python3
