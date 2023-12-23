@@ -7,10 +7,13 @@ all:
         
   vars:
 
-    storage_retention: 90d
+    storage_retention: 7d
 
-    kiwi_labs_host: prometheus.dev.kiwi-labs.net
-    diesel_net_host: prometheus.dev.diesel.net
+    kiwi_host: prometheus.dev.kiwi-labs.net
+    diesel_host: prometheus.dev.diesel.net
+
+    # encrypted SHA htpasswd (user:password)
+    prom_htpasswd: "{{ lookup('env', 'PROM_HTPASSWD') }}"
     
     ansible_user: automation
     ansible_python_interpreter: /usr/bin/python3

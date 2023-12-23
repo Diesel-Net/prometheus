@@ -10,7 +10,7 @@ concurrency:
 
 steps:
   - name: deploy
-    image: docker.nexus.diesel.net/drone-ansible:2.13
+    image: docker.nexus.diesel.net/drone-ansible:7.2.0
     environment:
       PROM_HTPASSWD:
         from_secret: prom_htpasswd
@@ -43,7 +43,7 @@ concurrency:
 
 steps:
   - name: deploy
-    image: docker.nexus.diesel.net/drone-ansible:2.13
+    image: docker.nexus.diesel.net/drone-ansible:7.2.0
     environment:
       PROM_HTPASSWD:
         from_secret: prom_htpasswd
