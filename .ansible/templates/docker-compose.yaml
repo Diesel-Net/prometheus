@@ -16,15 +16,20 @@ services:
     deploy:
       labels:
         - traefik.enable=true
-        - traefik.http.services.{{ repository }}.loadbalancer.server.port=9090
-        - traefik.http.routers.{{ repository }}.rule=Host(`{{ prom_host }}`)
-        # encrypted SHA htpasswd (user:password)
-        - traefik.http.middlewares.{{ repository }}-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
-        - traefik.http.routers.{{ repository }}.middlewares={{ repository }}-auth@docker
-        - traefik.http.routers.{{ repository }}.tls.certresolver=cloudflare
-        - traefik.http.routers.{{ repository }}.tls.domains[0].main={{ prom_domains_main }}
-        - traefik.http.routers.{{ repository }}.tls.domains[0].sans={{ prom_domains_sans }}
-        - traefik.http.routers.{{ repository }}.service={{ repository }}
+        - traefik.http.services.prom-backend.loadbalancer.server.port=9090
+        - traefik.http.middlewares.prom-auth.basicauth.users={{ lookup("env", "PROM_HTPASSWD") }}
+
+        - traefik.http.routers.kiwi-labs.rule=Host(`{{ kiwi_labs_host }}`)
+        - traefik.http.routers.kiwi-labs.middlewares=auth@docker
+        - traefik.http.routers.kiwi-labs.tls.certresolver=cloudflare
+        - traefik.http.routers.kiwi-labs.tls.domains[0].main={{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
+        - traefik.http.routers.kiwi-labs.tls.domains[0].sans=*.{{ '.'.join( kiwi_labs_host.split('.')[1:] ) }}
+        - traefik.http.routers.kiwi-labs.service=prom-backend@docker
+
+        - traefik.http.routers.diesel-net.rule=Host(`{{ diesel_net_host }}`)
+        - traefik.http.routers.diesel-net.middlewares=auth@docker
+        - traefik.http.routers.diesel-net.tls.certresolver=step-ca
+        - traefik.http.routers.diesel-net.service=prom-backend@docker
     networks:
       - {{ traefik_network }}
 
